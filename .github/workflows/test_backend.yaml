@@ -1,0 +1,25 @@
+name: Test Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '!**/README.md'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '!**/README.md'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Test the Backend
+    steps:
+      - uses: arduino/setup-task@v1
+      - uses: earthly/actions-setup@v1
+      - uses: actions/checkout@v2
+
+      - name: test
+        run: task test

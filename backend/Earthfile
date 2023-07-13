@@ -3,13 +3,19 @@ VERSION 0.7
 main:
   FROM node:20.4-slim
 
-lint:
+src:
   FROM +main
   
   WORKDIR /backend
   COPY . .
 
   RUN npm ci
+
+lint:
+  FROM +src
   RUN npm run type-check
   RUN npm run lint
 
+test:
+  FROM +src
+  RUN npm run test

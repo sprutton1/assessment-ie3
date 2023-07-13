@@ -1,0 +1,25 @@
+name: Lint Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '!**/README.md'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '!**/README.md'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint the Backend
+    steps:
+      - uses: arduino/setup-task@v1
+      - uses: earthly/actions-setup@v1
+      - uses: actions/checkout@v2
+
+      - name: lint
+        run: task lint_backend

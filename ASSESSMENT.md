@@ -8,7 +8,7 @@ this document with justifications and alterations as I proceed.
 - [X] Create this readme
 - [X] Update branch protections
 - [X] Add basic repo setup
-- [ ] Add GHA linting
+- [X] Add GHA linting
 - [ ] Add GHA tests
 - [ ] Add GHA build
 - [ ] Add GHA artifact shipping
@@ -37,3 +37,16 @@ This is what I would consider the very basic not-project-specific tooling for a 
 - PR Template for consistency in PRs 
   - It's helpful for everyone to know the expectations when opening a PR, especially cross-team
 
+### Add linters
+
+I started using Earthly here. If you aren't familiar it's basically a handy little docker-like kit
+for running self-contained workloads. Great for CI and local development so you can ensure you are running
+the same things in both places. As they say, Dockerfile and Makefile had a baby.
+
+Speaking of Makefile, I used a Taskfile here. It's very similar to Make, but with a modern, comfortable syntax.
+I find it an easy alternative to Make. I wrap my CI functions with Task and also include developer convenience 
+scripts (`task lint`) to run all of the linters at once in Earthly.
+
+I create two GHA workflows, one for each lint. Each one only runs against the files specific to the directories
+being changed. I tend to run linters separately from tests as you can still get good feedback from test failures
+and linting failures separately. This also lets the tests start as soon as possible.

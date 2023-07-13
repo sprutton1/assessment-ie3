@@ -1,0 +1,37 @@
+version: 3
+  
+tasks:
+
+  help:
+  desc: Display this help screen
+  silent: true
+  cmds:
+    - task --list
+
+### Composite Tasks ###
+
+  lint:
+   desc: Run all of the linters
+   silent: true
+   deps:
+     - lint_backend
+     - lint_frontend
+
+### Tasks ###       
+  lint_backend:
+    silent: true
+    cmds:
+      - |
+        DIR=$(git rev-parse --show-toplevel)
+        pushd $DIR/backend
+        earthly +lint
+        popd
+
+  lint_frontend:
+    silent: true
+    cmds:
+      - |
+        DIR=$(git rev-parse --show-toplevel)
+        pushd $DIR/frontend
+        earthly +lint
+        popd 

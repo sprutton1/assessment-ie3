@@ -1,0 +1,36 @@
+name: "Lint PR"
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+
+jobs:
+  # Validate PR conventions to ensure conventioanl commits are followed.
+  conventions:
+    runs-on: ubuntu-latest
+    steps:
+      # Validate PR title.
+      - name: Validate PR title
+        uses: amannn/action-semantic-pull-request@v5.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Configure which types are allowed.
+          types: |
+            build
+            chore
+            ci
+            docs
+            feat
+            fix
+            perf
+            refactor
+            revert
+            style
+            test

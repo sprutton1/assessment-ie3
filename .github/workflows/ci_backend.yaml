@@ -15,7 +15,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Test the Backend
+    name: Test the backend
     steps:
       - uses: arduino/setup-task@v1
       - uses: earthly/actions-setup@v1
@@ -28,7 +28,7 @@ jobs:
     needs:
       - test
     runs-on: ubuntu-latest
-    name: Build the Backend
+    name: Build and push the backend
     steps:
       - uses: arduino/setup-task@v1
       - uses: earthly/actions-setup@v1

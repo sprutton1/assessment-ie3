@@ -9,7 +9,7 @@ this document with justifications and alterations as I proceed.
 - [X] Update branch protections
 - [X] Add basic repo setup
 - [X] Add GHA linting
-- [ ] Add GHA tests
+- [X] Add GHA tests
 - [ ] Add GHA build
 - [ ] Add GHA artifact shipping
 - [ ] Create deployment definitions
@@ -50,3 +50,8 @@ scripts (`task lint`) to run all of the linters at once in Earthly.
 I create two GHA workflows, one for each lint. Each one only runs against the files specific to the directories
 being changed. I tend to run linters separately from tests as you can still get good feedback from test failures
 and linting failures separately. This also lets the tests start as soon as possible.
+
+## Add tests
+
+Pretty simple, we just extrend what we did before with linters to add a workflow for tests. I also refactored
+the earthfiles so the bits can be more reusable.

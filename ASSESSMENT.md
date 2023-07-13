@@ -10,7 +10,7 @@ this document with justifications and alterations as I proceed.
 - [X] Add basic repo setup
 - [X] Add GHA linting
 - [X] Add GHA tests
-- [ ] Add GHA build
+- [X] Add GHA build
 - [ ] Add GHA artifact shipping
 - [ ] Create deployment definitions
 - [ ] Create deployment environment
@@ -51,7 +51,13 @@ I create two GHA workflows, one for each lint. Each one only runs against the fi
 being changed. I tend to run linters separately from tests as you can still get good feedback from test failures
 and linting failures separately. This also lets the tests start as soon as possible.
 
-## Add tests
+### Add tests
 
 Pretty simple, we just extrend what we did before with linters to add a workflow for tests. I also refactored
 the earthfiles so the bits can be more reusable.
+
+### The build
+
+Just continuing along here, adding `npm build` to our setup. Included tasks to run both builds simultaneously. I changed
+the backend test workflow to better reflect that it is CI now as we test and build. Made a separate build for frontend
+even though there are no tests (shame).

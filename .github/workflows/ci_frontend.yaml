@@ -1,0 +1,25 @@
+name: CI Frontend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - '!**/README.md'
+  pull_request:
+    paths:
+      - 'frontend/**'
+      - '!**/README.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build the Frontend
+    steps:
+      - uses: arduino/setup-task@v1
+      - uses: earthly/actions-setup@v1
+      - uses: actions/checkout@v2
+
+      - name: build
+        run: task build_frontend

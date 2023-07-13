@@ -28,6 +28,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Build the Backend
     steps:
+      - uses: arduino/setup-task@v1
+      - uses: earthly/actions-setup@v1
+      - uses: actions/checkout@v2
+
       - name: build
         run: task build_backend
 

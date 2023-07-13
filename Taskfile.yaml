@@ -18,6 +18,17 @@ tasks:
      - lint_frontend
 
 ### Tasks ###       
+
+  test:
+    desc: Run tests (in backend)
+    silent: true
+    cmds:
+      - |
+        DIR=$(git rev-parse --show-toplevel)
+        pushd $DIR/backend
+        earthly +test
+        popd
+
   lint_backend:
     silent: true
     cmds:

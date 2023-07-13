@@ -25,6 +25,8 @@ jobs:
         run: task build_frontend
 
   push:
+    needs:
+      - build
     runs-on: ubuntu-latest
     name: Push the frontend image
     steps:

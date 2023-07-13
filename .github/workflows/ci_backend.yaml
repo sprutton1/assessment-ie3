@@ -36,6 +36,9 @@ jobs:
         run: task build_backend
 
   push:
+    needs:
+      - test
+      - build
     runs-on: ubuntu-latest
     name: Push the Backend image
     steps:

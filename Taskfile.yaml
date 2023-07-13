@@ -10,6 +10,13 @@ tasks:
 
 ### Composite Tasks ###
 
+  build:
+   desc: Build all container images
+   silent: true
+   deps:
+     - build_backend
+     - build_frontend
+
   lint:
    desc: Run all of the linters
    silent: true
@@ -19,15 +26,23 @@ tasks:
 
 ### Tasks ###       
 
-  test:
-    desc: Run tests (in backend)
+  build_backend:
     silent: true
     cmds:
       - |
         DIR=$(git rev-parse --show-toplevel)
         pushd $DIR/backend
-        earthly +test
+        earthly +build
         popd
+
+  build_frontend:
+    silent: true
+    cmds:
+      - |
+        DIR=$(git rev-parse --show-toplevel)
+        pushd $DIR/frontend
+        earthly +build
+        popd 
 
   lint_backend:
     silent: true
@@ -46,3 +61,14 @@ tasks:
         pushd $DIR/frontend
         earthly +lint
         popd 
+
+  test:
+    desc: Run tests (in backend)
+    silent: true
+    cmds:
+      - |
+        DIR=$(git rev-parse --show-toplevel)
+        pushd $DIR/backend
+        earthly +test
+        popd
+

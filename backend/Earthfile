@@ -11,6 +11,12 @@ src:
 
   RUN npm ci
 
+build:
+  FROM +src
+  RUN npm run build
+  ENTRYPOINT ["npm", "run"]
+  SAVE IMAGE backend
+
 lint:
   FROM +src
   RUN npm run type-check

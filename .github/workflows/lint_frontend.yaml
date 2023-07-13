@@ -1,0 +1,25 @@
+name: Lint Frontend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - '!**/README.md'
+  pull_request:
+    paths:
+      - 'frontend/**'
+      - '!**/README.md'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint the frontend
+    steps:
+      - uses: arduino/setup-task@v1
+      - uses: earthly/actions-setup@v1
+      - uses: actions/checkout@v2
+
+      - name: lint
+        run: task lint_frontend

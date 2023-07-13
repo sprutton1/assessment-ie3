@@ -15,7 +15,7 @@ build:
   FROM +src
   RUN npm run build
   ENTRYPOINT ["npm", "run"]
-  SAVE IMAGE frontend
+  SAVE IMAGE sprutton1/frontend
 
 lint:
   FROM +src

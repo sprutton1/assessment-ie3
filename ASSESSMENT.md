@@ -11,7 +11,7 @@ this document with justifications and alterations as I proceed.
 - [X] Add GHA linting
 - [X] Add GHA tests
 - [X] Add GHA build
-- [ ] Add GHA artifact shipping
+- [X] Add GHA artifact shipping
 - [ ] Create deployment definitions
 - [ ] Create deployment environment
 - [ ] Deploy!
@@ -61,3 +61,9 @@ the earthfiles so the bits can be more reusable.
 Just continuing along here, adding `npm build` to our setup. Included tasks to run both builds simultaneously. I changed
 the backend test workflow to better reflect that it is CI now as we test and build. Made a separate build for frontend
 even though there are no tests (shame).
+
+### Pushing images
+
+I chose Dockerhub as my artifact store as I happen to have an account there. I also changed the images to point at my
+user so I can push images. The pipelines just push over the latest image. If I have time, we'll do this with proper
+versioning, but it didn't seem super salient at the moment.

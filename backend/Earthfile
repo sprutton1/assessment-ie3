@@ -14,8 +14,9 @@ src:
 build:
   FROM +src
   RUN npm run build
-  ENTRYPOINT ["npm", "run"]
-  SAVE IMAGE sprutton1/backend
+  EXPOSE 3030
+  ENTRYPOINT ["npm", "run", "start"]
+  SAVE IMAGE sprutton1/backend:latest
 
 lint:
   FROM +src

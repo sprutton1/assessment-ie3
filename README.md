@@ -1,3 +1,6 @@
+Assessment details can be found [here](./ASSESSMENT.md).
+The deployed site can be found [here](http://taskly.scottprutton.com/)
+
 # Infrastructure Engineer 3 Take-Home Assessment
 
 This is the repository for the System Initiative Infrastructure Engineer III take-home assessment. It is designed to verify that:

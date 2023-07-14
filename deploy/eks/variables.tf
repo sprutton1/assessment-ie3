@@ -9,4 +9,6 @@ locals {
   tags = {
     cluster = local.name
   }
+
+  eks_cluster_domain = aws_route53_zone.primary.name 
 }

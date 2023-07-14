@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "taskly.fullname" . }}-be
+  labels:
+    {{- include "taskly.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "taskly.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "taskly.selectorLabels" . | nindent 8 }}
+        app: backend
+    spec:
+      serviceAccountName: {{ include "taskly.serviceAccountName" . }}
+      tolerations:
+        - key: eks.amazonaws.com/compute-type
+          operator: Equal
+          value: fargate
+          effect: NoSchedule
+      containers:
+        - name: {{ .Chart.Name }}-be
+          resources:
+            limits:
+              cpu: .5
+              memory: 1G
+            requests:
+              cpu: .5
+              memory: 1G
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.service.port }}
+              protocol: TCP

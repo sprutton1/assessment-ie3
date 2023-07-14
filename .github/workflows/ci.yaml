@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'deploy/**'
+      - '!**/README.md'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'deploy/**'
+      - '!**/README.md'
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    name: Test the backend
+    steps:
+      - uses: arduino/setup-task@v1
+      - uses: earthly/actions-setup@v1
+      - uses: actions/checkout@v3
+
+      - name: test
+        run: task test
+
+  build-and-push-backend:
+    needs:
+      - test-backend
+    runs-on: ubuntu-latest
+    name: Build and push the backend
+    steps:
+      - uses: arduino/setup-task@v1
+      - uses: earthly/actions-setup@v1
+      - uses: actions/checkout@v3
+
+      - name: build
+        run: task build_backend
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: push
+        run: docker push sprutton1/backend
+
+  build-and-push-frontend:
+    runs-on: ubuntu-latest
+    name: Build the and push the frontend
+    steps:
+      - uses: arduino/setup-task@v1
+      - uses: earthly/actions-setup@v1
+      - uses: actions/checkout@v3
+
+      - name: build
+        run: task build_frontend
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: push
+        run: docker push sprutton1/frontend
+
+  deploy-app:
+    needs:
+      - build-and-push-backend
+      - build-and-push-frontend
+    runs-on: ubuntu-latest
+    name: Deploy the app
+    steps:
+      - name: Post build status
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          token: ${{ secrets.PAT }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Docker images built and pushed, now we will prepare the PR environment.
+            Once ready, it will be found at:
+            
+            http://taskly${{ github.event.pull_request.number }}.scottprutton.com
+
+            This may take a few minutes, please be patient
+          reactions: eyes
+
+      - uses: azure/setup-helm@v3
+      - uses: azure/setup-kubectl@v3
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Get kubeconfig
+        run: aws eks update-kubeconfig --region us-east-1 --name taskly-cluster
+
+      - name: Deploy
+        run: |
+          # cleanup first to ensure clean deployments. Less necessary with actual
+          # image tagging
+          helm uninstall taskly${{ github.event.pull_request.number }} || true
+          helm upgrade --install taskly${{ github.event.pull_request.number }} deploy/helm/taskly 

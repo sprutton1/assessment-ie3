@@ -12,10 +12,10 @@ this document with justifications and alterations as I proceed.
 - [X] Add GHA tests
 - [X] Add GHA build
 - [X] Add GHA artifact shipping
-- [ ] Create deployment definitions
+- [X ] Create deployment definitions
 - [X] Create deployment environment
-- [ ] Deploy!
-- [ ] Deploy per PR!
+- [X] Deploy!
+- [X] Deploy per PR!
 
 - [ ] Bonus: Security Scans (somewhere a DevSecOps engineer is crying out in pain because this is a bonus)
 - [ ] Bonus: Dependabot 
@@ -82,3 +82,47 @@ if I have time. I wanted to start here to get the environment created so I could
 In the real world, I would likely not include these resources in this repo. This environment is likely to be fairly static
 and potentially shared across many teams. It would be better in a separate repo, but I wanted to include it for demonstrative
 purposes.
+
+The environment includes EKS and some fancy add-ons for automatically creating load balancers and Route53 records from 
+Kubernetes ingresses.
+
+### Deploy
+
+I created a Helm chart for our deployments and the related resources. Nothing too fancy here, but I left things generic so I
+could make multiples of the deployment so we could support many instances.
+
+Onto actually deploying the stack. This is definitely where I spent the most time. I don't have a ton of experience with 
+vue/vite, so I had to do some learning to understand the deployment patterns. The backend was easy, but I had trouble getting
+the frontend to play nice with talking to the backend. I tried http-server with no luck (once deployed in K8s). I started to 
+use NGINX, did some research first and found Caddy, a pretty minimal webserver. It was so simple, I think I'll end up using 
+this in some of my personal projects.
+
+I also combined the separate CI processes here, just to make it easier to orchestrate the deployment. If I had more time I
+could make something a little more complicated that doesn't require this. 
+
+I caught a lot of issues from earlier PRs I had to fix to make the deployments actually work. An artifact of trying to move
+quickly. Adding all of this CI helps with confidence, though. 
+
+I wanted to make sure that Taskly developers could make PRs and validate changes in a strightforward manner, so each PR deploys
+a discrete instance of Taskly. A nentry is automatically created in the ALB and, once it is ready, a comment is posted to the PR
+with the URL so changes can be validated.
+
+Note that in some cases it can take a few minutes for the PR environment to become responsive, mostly due to ALB registration 
+timing. Even if the frontend is responsive, the backend may not be immediately. Give it a couple minutes.
+
+### Things missing
+
+There is a lot here I would change or improve given more time. Highlights include:
+
+* Switching from Terraform to CDK to better align with the rest of the project. I didn't start here as I knew I could get 
+the Terraform together very quickly
+* PR environment create is real slow, mostly due to waiting for things like Fargate, the ALB, and DNS propagation. There 
+are plenty of ways to make this faster (nodes already existing in EKS, not using ALBs, etc.)
+* Including Security Scanning, Code Quality, Dependabot and other checks in the pipeline. These things are often shipped 
+off to 3rd party tools and I didn't have any handy to integrate with 
+* Build time could be improved. Caching could be added and the workflow could be more optimal
+* Versioning isn't implemented, so automated deployments are somehwat clunky. This is easily addressed by including semantic 
+versioning
+* There's a ton of opportunity for work around the local dev experience. Earthly is great for this and could be extended to 
+allow for all kinds of interesting tooling niceties. Using tools like MiniK8s or Kind, we could create on-the-fly deployment 
+environments, too

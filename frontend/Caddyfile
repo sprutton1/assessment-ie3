@@ -1,0 +1,5 @@
+:8080 {
+  reverse_proxy /api/* {$API_BASE_URL}
+  root * /dist
+  file_server
+}

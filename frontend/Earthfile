@@ -11,11 +11,19 @@ src:
 
   RUN npm ci
 
-build:
+prebuild:
   FROM +src
   RUN npm run build
-  ENTRYPOINT ["npm", "run"]
-  SAVE IMAGE sprutton1/frontend
+  SAVE ARTIFACT ./dist # AS LOCAL ./dist
+
+build:
+  FROM caddy:2.6-alpine
+
+  COPY ./Caddyfile /etc/caddy/Caddyfile
+  COPY +prebuild/dist /dist
+
+  EXPOSE 8080
+  SAVE IMAGE sprutton1/frontend:latest
 
 lint:
   FROM +src

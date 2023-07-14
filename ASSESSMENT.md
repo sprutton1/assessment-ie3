@@ -13,7 +13,7 @@ this document with justifications and alterations as I proceed.
 - [X] Add GHA build
 - [X] Add GHA artifact shipping
 - [ ] Create deployment definitions
-- [ ] Create deployment environment
+- [X] Create deployment environment
 - [ ] Deploy!
 - [ ] Deploy per PR!
 
@@ -67,3 +67,18 @@ even though there are no tests (shame).
 I chose Dockerhub as my artifact store as I happen to have an account there. I also changed the images to point at my
 user so I can push images. The pipelines just push over the latest image. If I have time, we'll do this with proper
 versioning, but it didn't seem super salient at the moment.
+
+### Deployment Environment 
+
+I chose to use EKS here, mainly because I have a lot of familiarity with the platform and new I could get it up and running 
+without much trouble. In all honesty, it's overkill for just running two containers, but who knows what kind of complicated
+deployment architecture Taskly might have in the future? It also doesn't quite follow the "use free services" part of the 
+assessment, but it's not much to add to my existing AWS bill. 
+
+In order to create this environment, I included some Terraform modules and a pipeline to validate and deploy them. I think 
+that using something like CDK to use Typescript may be a better fit in this project overall, and I will likely switch to that
+if I have time. I wanted to start here to get the environment created so I could improve it later.
+
+In the real world, I would likely not include these resources in this repo. This environment is likely to be fairly static
+and potentially shared across many teams. It would be better in a separate repo, but I wanted to include it for demonstrative
+purposes.

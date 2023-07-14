@@ -1,0 +1,83 @@
+name: Deployment Environment Setup
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'deploy/eks/**'
+  pull_request:
+    paths:
+      - 'deploy/eks/**'
+
+jobs:
+  test:
+    permissions:
+      id-token: write
+      contents: read
+    defaults:
+      run:
+        working-directory: deploy/eks
+    runs-on: ubuntu-latest
+    name: Deploy the test environment
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          echo 'plan<<EOF' >> $GITHUB_OUTPUT
+          terraform plan -no-color -out=tfplan >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: "Terraform Plan:"
+
+      - name: Comment Plan
+        continue-on-error: true
+        id: comment-plan
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          token: ${{ secrets.PAT }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Terraform Plan:
+
+            ```
+            ${{ steps.plan.outputs.plan }}
+            ```
+          edit-mode: replace
+          reactions: rocket
+
+      - name: Terraform apply on main
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        id: apply
+        run: terraform apply --auto-approve

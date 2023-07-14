@@ -58,6 +58,19 @@ module "eks" {
         { namespace = "kube-system" }
       ]
     }
+    default = {
+      name = "default"
+      selectors = [
+        { namespace = "default" }
+      ]
+    }
+    external-dns = {
+      name = "external-dns"
+      selectors = [
+        { namespace = "external-dns" }
+      ]
+    }
+
   }
 
   fargate_profile_defaults = {
@@ -115,10 +128,46 @@ module "eks_blueprints_addons" {
         name  = "podDisruptionBudget.maxUnavailable"
         value = 1
       },
+      {
+        name = "tolerations[0].key"
+        value = "eks.amazonaws.com/compute-type"
+      },
+      {
+        name = "tolerations[0].operator"
+        value = "Equal"
+      },
+      {
+        name = "tolerations[0].value"
+        value = "Fargate"
+      },
+      {
+        name = "tolerations[0].effect"
+        value = "NoSchedule"
+      },
     ]
   }
 
   enable_external_dns = true
+  external_dns = {
+    set = [
+      {
+        name = "tolerations[0].key"
+        value = "eks.amazonaws.com/compute-type"
+      },
+      {
+        name = "tolerations[0].operator"
+        value = "Equal"
+      },
+      {
+        name = "tolerations[0].value"
+        value = "Fargate"
+      },
+      {
+        name = "tolerations[0].effect"
+        value = "NoSchedule"
+      },
+    ]
+  }
 
   tags = local.tags
 }

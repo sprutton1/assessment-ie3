@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ include "taskly.fullname" . }}
+  labels:
+    app: frontend
+  annotations:
+    kubernetes.io/ingress.class: alb
+    external-dns.alpha.kubernetes.io/set-identifier: us-east-1
+    external-dns.alpha.kubernetes.io/aws-region: us-east-1
+    alb.ingress.kubernetes.io/group.name: taskly-frontend
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/actions.block-management: >
+      {"Type": "fixed-response", "Order": 1, "FixedResponseConfig": { "MessageBody": "Forbidden", "StatusCode": "403", "ContentType": "text/plain" }}
+spec:
+  rules:
+    - host: {{ include "taskly.fullname" . }}.scottprutton.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: {{ include "taskly.fullname" . }}-fe
+                port:
+                  number: 8080

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "taskly.fullname" . }}-test-connection"
+  labels:
+    {{- include "taskly.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "taskly.fullname" . }}-fe:{{ .Values.frontend.service.port }}']
+  restartPolicy: Never

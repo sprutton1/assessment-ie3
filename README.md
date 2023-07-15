@@ -1,5 +1,5 @@
 Assessment details can be found [here](./ASSESSMENT.md).
-The deployed site can be found [here](http://taskly.scottprutton.com/)
+The deployed site can be found [here](http://taskly.scottprutton.com/).
 
 # Infrastructure Engineer 3 Take-Home Assessment
 

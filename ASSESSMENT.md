@@ -12,7 +12,7 @@ this document with justifications and alterations as I proceed.
 - [X] Add GHA tests
 - [X] Add GHA build
 - [X] Add GHA artifact shipping
-- [X ] Create deployment definitions
+- [X] Create deployment definitions
 - [X] Create deployment environment
 - [X] Deploy!
 - [X] Deploy per PR!
@@ -112,6 +112,7 @@ timing. Even if the frontend is responsive, the backend may not be immediately. 
 
 ### Things missing
 
+Time constraints lead me towards using the tools I was most familiar with, not necessarily the best tools for the job.
 There is a lot here I would change or improve given more time. Highlights include:
 
 * Switching from Terraform to CDK to better align with the rest of the project. I didn't start here as I knew I could get 
